@@ -52,7 +52,7 @@ int main(int argc, char** argv){
 		printf("Filename:\t\t%s\n", pkglist[i].filename);
 		printf("Version:\t\t%d.%d.%d-%d\n", pkglist[i].major, pkglist[i].minor, pkglist[i].subver, pkglist[i].patch);
 		printf("Build script:\t\t%s\n", pkglist[i].script);
-		printf("URL:\t\t%s\n", pkglist[i].source);
+		printf("URL:\t\t\t%s\n", pkglist[i].source);
 		printf("Num of Dependencies:\t%u\n", pkglist[i].depnum);
 		for( int j = 0; j < pkglist[i].depnum; j++ ){
 			printf("Dependency %d:\t\t%s\n", j, pkglist[i].deplist[j]);
@@ -70,7 +70,7 @@ cleanup:
 			free( pkglist[i].deplist[j] );
 		}
 		free( pkglist[i].deplist );
-
+		free( pkglist[i].source );
 		free( pkglist[i].script );
 		free( pkglist[i].filename );
 		free( pkglist[i].name );

@@ -21,6 +21,8 @@ struct pkg {
 	unsigned int depnum;			/* Number of dependencies */
 	char* name;						/* Package name */
 	char* filename;					/* Filename, though yaml will just provide extension */
+	char* author;					/* Package Author */
+	char* source;					/* Where to obtain source from */
 	char* script;					/* Build script name or location */
 	char** deplist;					/* List of dependencies required for package */
 
@@ -50,6 +52,7 @@ int main(int argc, char** argv){
 		printf("Filename:\t\t%s\n", pkglist[i].filename);
 		printf("Version:\t\t%d.%d.%d-%d\n", pkglist[i].major, pkglist[i].minor, pkglist[i].subver, pkglist[i].patch);
 		printf("Build script:\t\t%s\n", pkglist[i].script);
+		printf("URL:\t\t%s\n", pkglist[i].source);
 		printf("Num of Dependencies:\t%u\n", pkglist[i].depnum);
 		for( int j = 0; j < pkglist[i].depnum; j++ ){
 			printf("Dependency %d:\t\t%s\n", j, pkglist[i].deplist[j]);
@@ -88,6 +91,9 @@ void parse_pkglist( char* filename ){
 
 	yaml_parser_t parser;
 	yaml_event_t event;
+
+	char* repo_src;
+	char* repo_name;
 
 	FILE *fpkglist = fopen(filename, "r");
 	if( fpkglist == NULL ){
@@ -168,13 +174,16 @@ void parse_pkglist( char* filename ){
 
 				}
 
-
 				break;
 			case YAML_MAPPING_END_EVENT:
 				//printf("\t\tMapping end\n");
 				
 				/* if editing a package values, make sure to increment package count for next pacakge */
 				if( map == 2 && seq == 1 ){
+					/* add repo specific things to package */
+					pkglist[pkgnum].source = calloc( strlen(repo_src) , sizeof(char) );
+					memcpy( pkglist[pkgnum].source, repo_src, strlen(repo_src) );
+					printf("Copy repo src: %s\n", pkglist[pkgnum].source);
 					pkgnum++;
 					//printf("Finished package, increment count to %d\n", pkgnum);
 				}
@@ -189,7 +198,15 @@ void parse_pkglist( char* filename ){
 
 				/* repository values */
 				if( map == 1 && seq == 0){
-					//printf("Repository data\n");
+//					printf("Repository data\n : %s \n", event.data.scalar.value);
+					if( strncmp( event.data.scalar.value, "source", event.data.scalar.length) == 0){
+						/* next scalar value will be the url */			
+						yaml_parse( &parser, &event )
+
+						printf("Repository source: %s \n", event.data.scalar.value);
+						repo_src = calloc( event.data.scalar.length + 1, sizeof(char) );
+						memcpy( repo_src, event.data.scalar.value, event.data.scalar.length );
+					}
 				}
 
 				/* Package values */

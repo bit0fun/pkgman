@@ -1,0 +1,18 @@
+---
+name: "GNU FTP"
+source: "ftp://ftp.gnu.org"
+author: "GNU"
+pkgs:
+ - name: "binutils"
+   major: 1
+   minor: 2
+   subver: 3
+   patch: 4
+   filename: "tar.gz"
+   script: "/path/to/build/script"
+   provides: "binutils"
+   dep:
+    - dep1
+    - dep2
+    - dep3
+    - dep4
